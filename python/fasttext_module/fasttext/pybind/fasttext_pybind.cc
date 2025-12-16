@@ -6,6 +6,10 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+// Define NumPy 2.x API compatibility
+#define NPY_NO_DEPRECATED_API NPY_2_0_API_VERSION
+#define NPY_TARGET_VERSION NPY_2_0_API_VERSION
+
 #include <args.h>
 #include <autotune.h>
 #include <densematrix.h>

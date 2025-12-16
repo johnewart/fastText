@@ -27,6 +27,10 @@ except ImportError:
     pass
 from fasttext.tests.test_configurations import get_supervised_models
 
+# Set random seeds for reproducibility and NumPy 2.x compatibility
+random.seed(42)
+np.random.seed(42)
+
 
 def eprint(cls, *args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
@@ -102,7 +106,16 @@ def get_random_data(
 
 
 def default_kwargs(kwargs):
-    default = {"thread": 1, "epoch": 1, "minCount": 1, "bucket": 1000}
+    # Default parameters for test datasets
+    default = {
+        "thread": 1,
+        "epoch": 1,
+        "minCount": 1,
+        "bucket": 1000,
+        "lr": 0.05,
+        "dim": 10,
+        "minCountLabel": 1,
+    }
     for k, v in default.items():
         if k not in kwargs:
             kwargs[k] = v
@@ -374,10 +387,11 @@ class TestFastTextUnitPy(unittest.TestCase):
                 swids = np.array(swids)
                 vec4 = np.sum(input_matrix[swids] / len(swids), 0)
 
-            self.assertTrue(np.isclose(vec1, vec2, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec2, vec3, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec3, vec4, atol=1e-5, rtol=0).all())
-            self.assertTrue(np.isclose(vec4, vec1, atol=1e-5, rtol=0).all())
+            # Use np.allclose() for NumPy 2.x compatibility (returns Python bool)
+            self.assertTrue(np.allclose(vec1, vec2, atol=1e-5, rtol=0))
+            self.assertTrue(np.allclose(vec2, vec3, atol=1e-5, rtol=0))
+            self.assertTrue(np.allclose(vec3, vec4, atol=1e-5, rtol=0))
+            self.assertTrue(np.allclose(vec4, vec1, atol=1e-5, rtol=0))
 
     def gen_test_unsupervised_get_words(self, kwargs):
         # Check more corner cases of 0 vocab, empty file etc.

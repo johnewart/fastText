@@ -6,6 +6,9 @@
 # This source code is licensed under the MIT license found in the
 # LICENSE file in the root directory of this source tree.
 #
+# NOTE: This setup.py is primarily for building the C++ extension module.
+# Project metadata and dependencies are managed in pyproject.toml.
+# Use `uv pip install -e .` for development installation.
 
 from __future__ import absolute_import
 from __future__ import division
@@ -35,12 +38,6 @@ class get_pybind_include:
     method can be invoked."""
 
     def __init__(self, user=False):
-        try:
-            pass
-        except ImportError:
-            if subprocess.call([sys.executable, "-m", "pip", "install", "pybind11"]):
-                raise RuntimeError("pybind11 install failed.")
-
         self.user = user
 
     def __str__(self):
@@ -80,9 +77,9 @@ ext_modules = [
         ],
         language="c++",
         extra_compile_args=[
-            "-O0 -fno-inline -fprofile-arcs -pthread -march=native"
+            "-O0 -fno-inline -fprofile-arcs -pthread -march=native -DNPY_NO_DEPRECATED_API=NPY_2_0_API_VERSION"
             if coverage
-            else "-O3 -funroll-loops -pthread -march=native"
+            else "-O3 -funroll-loops -pthread -march=native -DNPY_NO_DEPRECATED_API=NPY_2_0_API_VERSION"
         ],
     ),
 ]
@@ -194,7 +191,7 @@ setup(
         "Operating System :: Unix",
         "Operating System :: MacOS",
     ],
-    install_requires=["pybind11>=2.2", "setuptools >= 0.7.0", "numpy"],
+    install_requires=["pybind11>=2.13.0", "numpy>=2.3.0"],
     cmdclass={"build_ext": BuildExt},
     packages=[
         str("fasttext"),

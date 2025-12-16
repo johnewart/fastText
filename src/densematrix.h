@@ -26,7 +26,7 @@ class Vector;
 class DenseMatrix : public Matrix {
  protected:
   intgemm::AlignedVector<real> data_;
-  void uniformThread(real, int, int32_t);
+  void uniformThread(real, int, int32_t, int32_t);
 
  public:
   DenseMatrix();

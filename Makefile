@@ -71,6 +71,25 @@ fasttext: $(OBJS) src/fasttext.cc src/main.cc
 clean:
 	rm -rf *.o *.gcno *.gcda fasttext *.bc webassembly/fasttext_wasm.js webassembly/fasttext_wasm.wasm
 
+# Python module targets
+python-build-install:
+	uv venv
+	uv pip install --no-build-isolation -e ".[dev]"
+
+python-sync:
+	uv sync --extra dev
+
+python-test-unit:
+	uv run python runtests.py --unit-tests
+
+python-clean:
+	rm -rf build/ dist/ *.egg-info .pytest_cache/ __pycache__/ python/**/__pycache__/ python/**/**/__pycache__/ .venv/
+	find . -name "*.pyc" -delete
+	find . -name "*.pyo" -delete
+	find . -name "*.so" -delete
+
+python-module: python-clean python-build-install python-unit-test
+
 
 EMCXX = em++
 EMCXXFLAGS = --bind --std=c++11 -s WASM=1 -s ALLOW_MEMORY_GROWTH=1 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['addOnPostRun', 'FS']" -s "DISABLE_EXCEPTION_CATCHING=0" -s "EXCEPTION_DEBUG=1" -s "FORCE_FILESYSTEM=1" -s "MODULARIZE=1" -s "EXPORT_ES6=1" -s 'EXPORT_NAME="FastTextModule"' -Isrc/
